@@ -1,0 +1,108 @@
+---
+title: "Developing Data Products Final Project"
+author: "D. Cucchiara"
+date: "`r Sys.Date()`"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## 
+- Uses data from R datasets; airquality.
+
+- 6 variables 
+    - Ozone 
+    - Solar Radiation
+    - Wind
+    - Temperature 
+    - Month 
+    - Day
+    
+- 153 observations, some missing data included.
+
+- Use the box labeled 'Variable' to select an air quality related parameter.
+
+- Shows the parameter's association with temperature. 
+
+- Ozone and Month have noticable trends.
+
+- Day and Solar Radiation don't seem to have any meaningful trend.
+
+## The data set:
+```{r, echo=FALSE}
+head(airquality, 20)
+```
+
+##
+```{r, echo = TRUE}
+library(shiny)
+
+shinyUI(
+    navbarPage("Shiny Application",
+               tabPanel("Analysis",
+                        fluidPage(
+                            titlePanel("How Air Quality Factors Affect Temperature"),
+                            sidebarLayout(
+                                sidebarPanel(
+                                    selectInput("variable", "Variable:",
+                                                c("Ozone" = "Ozone",
+                                                  "Solar Radiation" = "Solar.R",
+                                                  "Wind" = "Wind",
+                                                  "Month" = "Month"
+                                                  )),
+                                    ),
+                                
+                                mainPanel(
+                                    h3(textOutput("caption")),
+                                    
+                                    tabsetPanel(type = "tabs", 
+                                                tabPanel("BoxPlot", plotOutput("aqBoxPlot")),
+                                                    plotOutput("aqPlot"),
+                                                tabPanel("Supporting Documentation"),
+                                                h4("Data set is from R datasets, airquality"),
+                                                h4("Here you can view box plots of airquality data as it relates
+            to temperature. Use the selection panel to choose the variable 
+            to see it's relationship to temperature."  ),
+                                                h4("This data frame contains 153 observations and 6 variables. Variables
+            are Ozone, Solar Radiation, Wind, Temp, Month, and Day."),
+                                                       )
+                                    )
+                                )
+                            )
+                        )
+    )
+)
+
+```
+
+##
+```{r, echo=TRUE}
+library(shiny)
+library(datasets)
+
+aqData <- airquality
+aqData$Temp <- factor(aqData$Temp)
+
+shinyServer(function(input, output) {
+    
+    formulaText <- reactive({
+        paste("Temp ~", input$variable)
+    })
+    
+    formulaTextPoint <- reactive({
+        paste("Temp ~", "as.integer(", input$variable, ")")
+    })
+    
+    output$caption <- renderText({
+        formulaText()
+    })
+    
+    output$aqBoxPlot <- renderPlot({
+        boxplot(as.formula(formulaText()), 
+                data = aqData)    })
+    
+})
+```
+
