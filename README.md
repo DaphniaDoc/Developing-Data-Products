@@ -7,3 +7,4 @@ The final course project for the Coursera class from Johns Hopkins: Developing D
 - It includes 6 variables: Ozone, Solar Radiation, Wind, Temperature, Month, and Day.
 - One should know that looking at the day as it relates to temperature is meaningless. 
 - This should cover the documentation requirements of this assignment.
+- https://daphniadani.shinyapps.io/test/ Link to shiny app ios. THE APP WORKS.
